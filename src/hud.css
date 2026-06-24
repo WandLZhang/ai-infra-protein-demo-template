@@ -1,0 +1,586 @@
+/* Baron Neue — ported from hud.jamalmahboob.com */
+@font-face {
+  font-family: 'BaronNeue-Regular';
+  src: url('./fonts/BaronNeue-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* HUD-style animations — ported from hud.jamalmahboob.com */
+
+@keyframes rotatingBoxesAnim1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes rotatingBoxesAnim2 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes rotatingBoxesAnim3 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+@keyframes locationAnim {
+  0% { filter: blur(20px); opacity: 0; transform: translateY(40px); }
+  100% { filter: blur(0); opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 4px rgba(179, 27, 27, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(179, 27, 27, 0.8); }
+}
+
+@keyframes terminalLineIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.terminal-line {
+  animation: terminalLineIn 0.15s ease-out backwards;
+}
+
+@keyframes infoBoxFadeIn {
+  from { opacity: 0; transform: translateY(4px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.info-content-wrap {
+  animation: infoBoxFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Terminal box — sits on the left, extends from below the hamburger to above the location paper.
+   Darker border and scrollbar so it doesn't visually compete with the map content. */
+.terminal-box {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.2vmin;
+  color: #d3d3d3;
+  white-space: pre-wrap;
+  cursor: default;
+  padding: 12px;
+  overflow-y: auto;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  scrollbar-color: #333 #1a1a1a;
+  scrollbar-width: thin;
+}
+.terminal-box::-webkit-scrollbar { width: 6px; }
+.terminal-box::-webkit-scrollbar-track { background: #1a1a1a; }
+.terminal-box::-webkit-scrollbar-thumb { background: #333; }
+.terminal-box::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Multi-region bucket label — sits over the cyan US polygon on the Catalog slide */
+@keyframes bucketLabelIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.92); filter: blur(8px); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1);    filter: blur(0); }
+}
+
+/* Transform-free fade-in. Use this for elements whose natural CSS transform
+   differs from translate(-50%, -50%) — animating opacity/filter only avoids
+   the "hop" you get when the keyframe's to-state overrides the real transform
+   for 0.5s and then snaps back when the animation ends. */
+@keyframes softFadeIn {
+  from { opacity: 0; filter: blur(6px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+@keyframes softPulse {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 0.85; }
+}
+.bucket-label {
+  display: inline-block;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border: 1px solid #B31B1B;
+  font-family: 'Courier New', Courier, monospace;
+  color: #B31B1B;
+  padding: 7px 12px;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  text-align: center;
+  pointer-events: none;
+  animation: bucketLabelIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bucket-label-name {
+  font-size: 1.7vmin;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.bucket-label-meta {
+  font-size: 1.05vmin;
+  color: #708090;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+/* Zone markers — spinner + text box as separate elements (Jamal HUD style) */
+.zone-marker-wrap {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.marker-spinner-box {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.marker-text-box {
+  background: rgba(0,0,0,0.8);
+  border: 1px solid #333;
+  font-family: 'Courier New', monospace;
+  font-size: 1.5vmin;
+  color: #ccc;
+  white-space: nowrap;
+  padding: 1px 6px;
+  margin-left: 4px;
+}
+.marker-text-box b { font-weight: 700; }
+
+/* MD russian-doll overlay — nested layers (storage → H4D → topology) reveal
+   as md1 → md2 → md3 advances. Outer wrappers always reserve padding so the
+   inner storage row stays anchored at us-central1; their border + label fade
+   in via data-visible="true". */
+.md-doll-outer {
+  display: inline-block;             /* size tightly to nested content, not parent width */
+  /* Sit BELOW the us-central1 marker: doll's top edge sits 40px below the anchor
+     lat/lng, so the spinner stays visible above. */
+  transform: translate(-50%, 40px);
+  padding: 36px 40px 32px;
+  border: 1.5px solid transparent;
+  position: relative;
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+  animation: dollIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.md-doll-middle {
+  display: block;                    /* fills inline-block parent's content box */
+  padding: 30px 34px 26px;
+  border: 1.5px solid transparent;
+  position: relative;
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+.md-doll-outer[data-visible="true"],
+.md-doll-middle[data-visible="true"] {
+  border-color: #B31B1B;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+@keyframes dollIn {
+  from { opacity: 0; transform: translate(-50%, 40px) scale(0.96); filter: blur(6px); }
+  to   { opacity: 1; transform: translate(-50%, 40px) scale(1);    filter: blur(0); }
+}
+
+/* Top-center "tab" labels that sit on the border, breaking it cleanly. */
+.md-doll-label {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  padding: 0 14px;
+  color: #B31B1B;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  white-space: nowrap;
+  pointer-events: none;
+  line-height: 18px;
+}
+.md-doll-outer[data-visible="true"] > .md-doll-label,
+.md-doll-middle[data-visible="true"] > .md-doll-label {
+  opacity: 1;
+}
+
+/* HUD-style corner brackets on the outermost ring — adds the sci-fi feel. */
+.md-doll-outer[data-visible="true"]::before,
+.md-doll-outer[data-visible="true"]::after,
+.md-doll-middle[data-visible="true"]::before,
+.md-doll-middle[data-visible="true"]::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: #B31B1B;
+  border-style: solid;
+}
+.md-doll-outer[data-visible="true"]::before {
+  top: -3px; left: -3px; border-width: 2px 0 0 2px;
+}
+.md-doll-outer[data-visible="true"]::after {
+  bottom: -3px; right: -3px; border-width: 0 2px 2px 0;
+}
+.md-doll-middle[data-visible="true"]::before {
+  top: -3px; right: -3px; border-width: 2px 2px 0 0;
+}
+.md-doll-middle[data-visible="true"]::after {
+  bottom: -3px; left: -3px; border-width: 0 0 2px 2px;
+}
+
+.md-doll-inner {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* Storage box — the "juice." Hero number on top, product name in cyan,
+   subtle meta line below. Fixed min-width so the box doesn't squish. */
+.md-doll-storage {
+  background: linear-gradient(180deg, rgba(179,27,27,0.06) 0%, #fff 60%);
+  border: 1px solid #B31B1B;
+  padding: 14px 22px 12px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #B31B1B;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  animation: softFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+.md-doll-storage-hero {
+  font-family: 'BaronNeue-Regular', sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #222;
+  line-height: 1;
+}
+.md-doll-storage-name {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #B31B1B;
+  margin-top: 6px;
+}
+.md-doll-storage-meta {
+  font-size: 10px;
+  color: #708090;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Fractional GPU slice viz — img slide only. One RTX PRO 6000 Blackwell
+   visualized three ways (1/8, 1/4, 1/2). All rows same total width = the
+   whole GPU; slicing pattern reads visually. Anchored below the multi-region
+   bucket label at US_BUCKET_LABEL_POSITION. */
+.slice-viz {
+  width: 460px;
+  box-sizing: border-box;
+  transform: translate(-50%, 60px);
+  background: #fff;
+  border: 1px solid #B31B1B;
+  padding: 14px 18px 12px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #B31B1B;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  animation: softFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.slice-viz-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #B31B1B;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.slice-row-group {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.slice-row-group:last-of-type { margin-bottom: 0; }
+.slice-row-name {
+  width: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 10px;
+  color: #708090;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.slice-row {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+}
+.slice-cell {
+  flex: 1;
+  background: linear-gradient(180deg, rgba(179,27,27,0.08) 0%, rgba(179,27,27,0.02) 100%);
+  border: 1px solid rgba(179,27,27,0.4);
+  padding: 7px 0;
+  text-align: center;
+  font-size: 10px;
+  color: #000;
+  letter-spacing: 0.05em;
+}
+.slice-viz-footer {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(179,27,27,0.3);
+  font-size: 9.5px;
+  color: #708090;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* PD 3-stack sandwich — pd1 only. Three boxes stacked vertically below the
+   us-central1 spinner, reading bottom-to-top as the workload startup flow:
+   Hyperdisk ML loads model weights → BoltVMs serve a warm host → Pod Snapshots
+   restore pod state. Each box reuses the .md-doll-storage styling for visual
+   consistency with the MD doll's storage row. */
+.pd-stack-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  /* Anchor stack so its top edge sits 40px below the us-central1 spinner,
+     mirroring the MD doll's translate(-50%, 40px) positioning. */
+  transform: translate(-50%, 40px);
+  animation: softFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pd-stack-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  width: 440px;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.99);
+  border: 1px solid rgba(179,27,27,0.35);
+  padding: 7px 18px;
+  font-family: 'Courier New', Courier, monospace;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  white-space: nowrap;
+}
+.pd-stack-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #B31B1B;
+  flex-shrink: 0;
+}
+.pd-stack-hero {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  color: #000;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.pd-stack-meta {
+  font-size: 10px;
+  color: #000;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+/* SPOT / FLEX chips next to each VM line on pd2/pd3 — visualizes the
+   Spot→Flex failover pattern. Yellow = SPOT (same hue as provisioning,
+   "scarce/risky"), cyan = FLEX (same hue as done, "guaranteed"). */
+.partition-chip {
+  display: inline-block;
+  font-size: 0.65em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0 4px;
+  margin-right: 5px;
+  border: 1px solid currentColor;
+  vertical-align: middle;
+  line-height: 1.25;
+}
+.partition-chip-spot { color: #F8981D; }
+.partition-chip-flex { color: #B31B1B; }
+
+/* Zone cache halo — cyan ring around each marker on the catalog3 slide.
+   Visualizes Rapid Cache (SSD data) + Image Streaming (container files) landing zone-local. */
+@keyframes haloPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 0.45; }
+  50%      { transform: translate(-50%, -50%) scale(1.15); opacity: 0.85; }
+}
+.marker-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56px;
+  height: 56px;
+  border: 1.5px solid #B31B1B;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(179,27,27,0.2);
+  pointer-events: none;
+  z-index: 0;
+  animation: haloPulse 2.2s ease-in-out infinite;
+}
+
+.rotatingBoxes1 { animation: rotatingBoxesAnim1 2.5s ease infinite; border: 1px solid #999; position: absolute; inset: 0; }
+.rotatingBoxes2 { animation: rotatingBoxesAnim2 2.25s ease infinite; border: 1px solid #bbb; position: absolute; inset: 0; }
+.rotatingBoxes3 { animation: rotatingBoxesAnim3 2s ease infinite; border: 1px solid #777; position: absolute; inset: 0; }
+
+.marker-provisioning .marker-text-box { border-color: #F8981D; color: #f0a0a0; }
+.marker-provisioning .rotatingBoxes1 { border-color: #F8981D; }
+.marker-provisioning .rotatingBoxes2 { border-color: #facc15; }
+.marker-provisioning .rotatingBoxes3 { border-color: #fde047; }
+
+.marker-failed .marker-text-box { border-color: #EF4035; color: #f0a0a0; }
+.marker-failed .rotatingBoxes1 { border-color: #EF4035; }
+.marker-failed .rotatingBoxes2 { border-color: #f87171; }
+.marker-failed .rotatingBoxes3 { border-color: #fca5a5; }
+
+.marker-active .marker-text-box { border-color: #B31B1B; color: #f0a0a0; }
+.marker-active .rotatingBoxes1 { border-color: #B31B1B; }
+.marker-active .rotatingBoxes2 { border-color: #D63B31; }
+.marker-active .rotatingBoxes3 { border-color: #E85A4F; }
+
+.marker-done .marker-text-box { border-color: #B31B1B; color: #f0a0a0; }
+.marker-done .rotatingBoxes1 { border-color: #B31B1B; }
+.marker-done .rotatingBoxes2 { border-color: #D63B31; }
+.marker-done .rotatingBoxes3 { border-color: #E85A4F; }
+
+/* Side ladder — skewed bars with title + subtitle inside */
+.sideLadderWrapper {
+  position: fixed;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  color: #fff;
+}
+.sideLadderItem {
+  display: block;
+  padding: 6px 14px;
+  margin: 5px 0;
+  border-left: 10px solid rgba(255,255,255,0.2);
+  transform: skewX(-15deg);
+  cursor: pointer;
+  transition: transform 0.25s ease, background 0.2s ease;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  min-width: 180px;
+}
+.sideLadderItem:hover {
+  transform: skewX(-15deg) translateX(-8px);
+  background: rgba(255,255,255,0.06);
+}
+/* TPU pulse — applied on tpu2 slide to the three TPU ladder entries.
+   Animates box-shadow only so it doesn't fight the inline borderLeftColor
+   (set per-lane based on state) or the skewX transform on the wrap. */
+@keyframes sideLadderTpuPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(179,27,27,0.2); }
+  50%      { box-shadow: 0 0 14px rgba(179,27,27,0.4); }
+}
+.sideLadderItem-tpu-pulse {
+  animation: sideLadderTpuPulse 2.2s ease-in-out infinite;
+}
+.sideLadderName {
+  display: block;
+  transform: skewX(15deg);
+  font-family: freight-sans-pro, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+}
+.sideLadderSub {
+  display: block;
+  transform: skewX(15deg);
+  font-family: freight-sans-pro, sans-serif;
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+}
+
+/* Location paper — bottom left */
+.location-paper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 20px 30px;
+  z-index: 10;
+  background: rgba(236,232,227,0.85);
+  backdrop-filter: blur(12px);
+  max-width: 40vw;
+}
+.location-paper::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+  background: #B31B1B;
+  transform: skew(-15deg);
+}
+.location-paper-region {
+  animation: locationAnim 2.5s ease;
+  animation-delay: 0.25s;
+  animation-fill-mode: both;
+  color: #B31B1B;
+  font-size: 1.1vw;
+  font-family: freight-sans-pro, sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+.location-paper-name {
+  animation: locationAnim 2.5s ease;
+  animation-fill-mode: both;
+  font-size: 3.8vw;
+  font-family: freight-text-pro, serif;
+  font-weight: 400;
+  color: #222;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.location-paper-name::after {
+  content: '';
+  display: block;
+  border-bottom: 2px solid #B31B1B;
+  width: 125%;
+  margin-top: 8px;
+}
+.location-paper-coords {
+  animation: locationAnim 2.5s ease;
+  animation-delay: 0.65s;
+  animation-fill-mode: both;
+  color: #707070;
+  font-size: 1.5vw;
+  font-family: 'BaronNeue-Regular', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  margin-top: 8px;
+}
+/* Info box links and code */
+.info-body a {
+  color: #006699;
+  text-decoration: none;
+}
+.info-body a:hover {
+  text-decoration: underline;
+}
+.info-body code {
+  font-family: 'Courier New', monospace;
+  color: #B31B1B;
+  font-size: 12px;
+  background: rgba(179,27,27,0.08);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+.info-body pre code {
+  color: #F8981D;
+  background: none;
+  padding: 0;
+}
+
+.location-paper-cost {
+  animation: locationAnim 2.5s ease;
+  animation-delay: 0.85s;
+  animation-fill-mode: both;
+  margin-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 8px;
+}
