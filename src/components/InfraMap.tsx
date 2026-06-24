@@ -326,7 +326,7 @@ export default function InfraMap({ lanes, zoneStates, vmStates, onZoneClick, cen
       {highlightUS && (
         <OverlayView position={US_BUCKET_LABEL_POSITION} mapPaneName={OverlayView.FLOAT_PANE}>
           <div className="bucket-label">
-            <div className="bucket-label-name">{config.home.displayBucket}</div>
+            <div className="bucket-label-name">{`gs://${config.institution.shortName.toLowerCase().replace(/\s+/g, '-')}-research`}</div>
             <div className="bucket-label-meta">US Multi-Region · Cloud Storage</div>
           </div>
         </OverlayView>
