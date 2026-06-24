@@ -1,3 +1,16 @@
+.pac-container {
+  z-index: 9999 !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+}
+.pac-container::after {
+  display: none !important;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 /* Baron Neue — ported from hud.jamalmahboob.com */
 @font-face {
   font-family: 'BaronNeue-Regular';

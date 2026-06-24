@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "cornell-protein-demo",
+    "site": "hpc-protein-demo",
     "public": "dist",
     "ignore": [
       "firebase.json",

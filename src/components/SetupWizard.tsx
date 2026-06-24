@@ -1,34 +1,37 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { config } from '../config'
-
-interface SetupValues {
-  institutionShortName: string
-  institutionFullName: string
-  buildingName: string
-  loginNode: string
-  markerSubtitle: string
-  lat: number
-  lng: number
-}
+import { useConfig } from '../config'
 
 interface Props {
   visible: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export default function SetupWizard({ visible }: Props) {
+const TOOLTIP_DISMISSED_KEY = 'setup-wizard-tooltip-dismissed'
+
+export default function SetupWizard({ visible, onOpenChange }: Props) {
+  const { config, setConfig, resetConfig } = useConfig()
   const [open, setOpen] = useState(false)
-  const [values, setValues] = useState<SetupValues>({
-    institutionShortName: config.institution.shortName,
-    institutionFullName: config.institution.fullName,
-    buildingName: config.home.buildingName,
-    loginNode: config.home.loginNode,
-    markerSubtitle: config.home.markerSubtitle,
-    lat: config.home.markerLatLng.lat,
-    lng: config.home.markerLatLng.lng,
-  })
-  const [copied, setCopied] = useState(false)
+  const [showTooltip, setShowTooltip] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    onOpenChange(open)
+  }, [open, onOpenChange])
+
+  useEffect(() => {
+    if (!visible) return
+    const dismissed = localStorage.getItem(TOOLTIP_DISMISSED_KEY)
+    if (!dismissed) {
+      const timer = setTimeout(() => setShowTooltip(true), 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [visible])
+
+  const dismissTooltip = () => {
+    setShowTooltip(false)
+    localStorage.setItem(TOOLTIP_DISMISSED_KEY, 'true')
+  }
 
   useEffect(() => {
     if (!open) return
@@ -52,45 +55,37 @@ export default function SetupWizard({ visible }: Props) {
       const lat = place.geometry.location.lat()
       const lng = place.geometry.location.lng()
       const name = place.name || ''
-      setValues(v => ({
-        ...v,
-        lat,
-        lng,
-        buildingName: name.toUpperCase() || v.buildingName,
-      }))
+      update({
+        home: {
+          ...config.home,
+          markerLatLng: { lat, lng },
+          cameraLatLng: { lat: lat - 0.025, lng: lng + 0.096 },
+          buildingName: name.toUpperCase() || config.home.buildingName,
+        },
+      })
     })
   }, [open])
 
-  const generateConfig = useCallback(() => {
-    const v = values
-    return `export const config = {
-  institution: {
-    shortName: '${v.institutionShortName}',
-    fullName: '${v.institutionFullName}',
-    pageTitle: '${v.institutionShortName} HPC with Google',
-    menuSubtitle: '${v.institutionShortName} Research Computing · TPU vs GPU',
-  },
-  home: {
-    buildingName: '${v.buildingName.toUpperCase()}',
-    markerLatLng: { lat: ${v.lat}, lng: ${v.lng} },
-    cameraLatLng: { lat: ${(v.lat - 0.025).toFixed(4)}, lng: ${(v.lng + 0.096).toFixed(4)} },
-    loginNode: '${v.loginNode}',
-    markerSubtitle: '${v.markerSubtitle}',
-    controllerConsoleHref: '',
-    displayBucket: 'gs://${v.institutionShortName.toLowerCase().replace(/\s+/g, '-')}-research',
-  },
-  deploy: {
-    firebaseSite: '${v.institutionShortName.toLowerCase().replace(/\s+/g, '-')}-protein-demo',
-  },
-}
-`
-  }, [values])
+  const update = useCallback((partial: Partial<typeof config>) => {
+    setConfig({ ...config, ...partial })
+  }, [config, setConfig])
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(generateConfig())
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const updateInstitution = useCallback((field: string, value: string) => {
+    const inst = { ...config.institution, [field]: value }
+    if (field === 'shortName') {
+      inst.pageTitle = `${value} HPC with Google`
+      inst.menuSubtitle = `${value} Research Computing · TPU vs GPU`
+    }
+    setConfig({ ...config, institution: inst })
+  }, [config, setConfig])
+
+  const updateHome = useCallback((field: string, value: string | number) => {
+    setConfig({ ...config, home: { ...config.home, [field]: value } })
+  }, [config, setConfig])
+
+  const stopPropagation = useCallback((e: React.KeyboardEvent | React.MouseEvent) => {
+    e.stopPropagation()
+  }, [])
 
   if (!visible) return null
 
@@ -106,28 +101,51 @@ export default function SetupWizard({ visible }: Props) {
   }
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
+    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', verticalAlign: 'middle' }}>
       <button
-        onClick={() => setOpen(!open)}
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); dismissTooltip() }}
         title="Configure institution"
         style={{
-          background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px',
-          fontSize: 14, color: '#999', opacity: 0.6, transition: 'opacity 0.15s',
+          background: 'rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: 3,
+          cursor: 'pointer', padding: '1px 6px',
+          fontSize: 12, lineHeight: '1.4', color: '#708090', transition: 'all 0.15s',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '0.6')}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = '#333' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = '#708090' }}
       >
         ⚙
       </button>
 
+      {showTooltip && !open && (
+        <div style={{
+          position: 'absolute', bottom: 'calc(100% + 8px)', left: '50%', transform: 'translateX(-50%)',
+          background: '#333', color: '#fff', padding: '8px 12px', borderRadius: 6,
+          fontSize: 11, fontFamily: 'freight-sans-pro, sans-serif', whiteSpace: 'nowrap',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.2)', animation: 'fadeInUp 0.3s ease',
+        }}>
+          <div style={{ position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%) rotate(45deg)',
+            width: 10, height: 10, background: '#333' }} />
+          <span>Click to change the origin location</span>
+          <button onClick={e => { e.stopPropagation(); dismissTooltip() }} style={{
+            background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer',
+            marginLeft: 8, fontSize: 12, padding: 0, lineHeight: 1,
+          }}>✕</button>
+        </div>
+      )}
+
       {open && (
         <div
           ref={panelRef}
+          onKeyDown={stopPropagation}
+          onKeyUp={stopPropagation}
+          onClick={stopPropagation}
           style={{
-            position: 'absolute', bottom: '100%', left: 0, marginBottom: 8,
-            width: 320, background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)',
+            position: 'fixed', bottom: 90, left: 30,
+            width: 320, maxHeight: 'calc(100vh - 120px)', overflowY: 'auto',
+            background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)',
             borderRadius: 6, boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
-            padding: '16px 18px', zIndex: 100,
+            padding: '16px 18px', zIndex: 50,
             border: '1px solid rgba(0,0,0,0.08)',
           }}
         >
@@ -135,65 +153,80 @@ export default function SetupWizard({ visible }: Props) {
             Configure Institution
           </div>
           <div style={{ fontSize: 10, color: '#999', marginBottom: 8, fontFamily: 'freight-sans-pro, sans-serif' }}>
-            Set up the demo for a new institution. Copy the generated config into <code style={{ fontSize: 10 }}>institution.config.ts</code>.
+            Changes apply live to the demo.
           </div>
 
           <label style={labelStyle}>Institution name</label>
-          <input style={inputStyle} value={values.institutionShortName}
-            onChange={e => setValues(v => ({ ...v, institutionShortName: e.target.value }))}
+          <input style={inputStyle} value={config.institution.shortName}
+            onKeyDown={stopPropagation}
+            onChange={e => updateInstitution('shortName', e.target.value)}
             placeholder="Cornell" />
 
           <label style={labelStyle}>Full name</label>
-          <input style={inputStyle} value={values.institutionFullName}
-            onChange={e => setValues(v => ({ ...v, institutionFullName: e.target.value }))}
+          <input style={inputStyle} value={config.institution.fullName}
+            onKeyDown={stopPropagation}
+            onChange={e => updateInstitution('fullName', e.target.value)}
             placeholder="Cornell University" />
 
           <label style={labelStyle}>Building (search)</label>
-          <input ref={searchInputRef} style={inputStyle} placeholder="Search for a building or address..." />
+          <input ref={searchInputRef} style={inputStyle}
+            onKeyDown={stopPropagation}
+            placeholder="Search for a building or address..." />
 
           <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
             <div style={{ flex: 1 }}>
               <label style={{ ...labelStyle, marginTop: 6 }}>Lat</label>
-              <input style={inputStyle} type="number" step="0.0001" value={values.lat}
-                onChange={e => setValues(v => ({ ...v, lat: parseFloat(e.target.value) || 0 }))} />
+              <input style={inputStyle} type="number" step="0.0001" value={config.home.markerLatLng.lat}
+                onKeyDown={stopPropagation}
+                onChange={e => {
+                  const lat = parseFloat(e.target.value) || 0
+                  update({ home: { ...config.home, markerLatLng: { ...config.home.markerLatLng, lat }, cameraLatLng: { ...config.home.cameraLatLng, lat: lat - 0.025 } } })
+                }} />
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ ...labelStyle, marginTop: 6 }}>Lng</label>
-              <input style={inputStyle} type="number" step="0.0001" value={values.lng}
-                onChange={e => setValues(v => ({ ...v, lng: parseFloat(e.target.value) || 0 }))} />
+              <input style={inputStyle} type="number" step="0.0001" value={config.home.markerLatLng.lng}
+                onKeyDown={stopPropagation}
+                onChange={e => {
+                  const lng = parseFloat(e.target.value) || 0
+                  update({ home: { ...config.home, markerLatLng: { ...config.home.markerLatLng, lng }, cameraLatLng: { ...config.home.cameraLatLng, lng: lng + 0.096 } } })
+                }} />
             </div>
           </div>
 
           <label style={labelStyle}>Building name (display)</label>
-          <input style={inputStyle} value={values.buildingName}
-            onChange={e => setValues(v => ({ ...v, buildingName: e.target.value }))}
+          <input style={inputStyle} value={config.home.buildingName}
+            onKeyDown={stopPropagation}
+            onChange={e => updateHome('buildingName', e.target.value.toUpperCase())}
             placeholder="RHODES HALL" />
 
           <label style={labelStyle}>Login node hostname</label>
-          <input style={inputStyle} value={values.loginNode}
-            onChange={e => setValues(v => ({ ...v, loginNode: e.target.value }))}
+          <input style={inputStyle} value={config.home.loginNode}
+            onKeyDown={stopPropagation}
+            onChange={e => updateHome('loginNode', e.target.value)}
             placeholder="cbsulogin" />
 
           <label style={labelStyle}>Marker subtitle</label>
-          <input style={inputStyle} value={values.markerSubtitle}
-            onChange={e => setValues(v => ({ ...v, markerSubtitle: e.target.value }))}
+          <input style={inputStyle} value={config.home.markerSubtitle}
+            onKeyDown={stopPropagation}
+            onChange={e => updateHome('markerSubtitle', e.target.value)}
             placeholder="cbsulogin · BioHPC" />
 
           <div style={{ marginTop: 14, display: 'flex', gap: 8 }}>
-            <button onClick={handleCopy} style={{
+            <button onClick={() => setOpen(false)} style={{
               flex: 1, padding: '7px 12px', fontSize: 11, fontWeight: 600,
               background: '#333', color: '#fff', border: 'none', borderRadius: 3,
               cursor: 'pointer', fontFamily: 'freight-sans-pro, sans-serif',
               letterSpacing: '0.04em',
             }}>
-              {copied ? '✓ Copied' : 'Copy Config'}
+              Done
             </button>
-            <button onClick={() => setOpen(false)} style={{
+            <button onClick={() => { resetConfig(); setOpen(false) }} style={{
               padding: '7px 12px', fontSize: 11,
               background: 'transparent', color: '#999', border: '1px solid #ddd', borderRadius: 3,
               cursor: 'pointer', fontFamily: 'freight-sans-pro, sans-serif',
             }}>
-              Close
+              Reset
             </button>
           </div>
         </div>

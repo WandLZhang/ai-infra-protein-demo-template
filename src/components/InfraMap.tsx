@@ -4,7 +4,7 @@ import ZoneMarker, { type MarkerState, type VMInfo } from './ZoneMarker'
 import type { BackendId, LaneStatus } from '../types'
 import { BACKENDS } from '../backends'
 import { HUD_MAP_STYLES } from '../mapStyles'
-import { config } from '../config'
+import { useConfig } from '../config'
 
 // Geographic center of CONUS — used to position the multi-region bucket label over the polygon.
 const US_BUCKET_LABEL_POSITION: google.maps.LatLngLiteral = { lat: 39.83, lng: -98.58 }
@@ -78,9 +78,6 @@ export interface ZoneInfo {
   backends: BackendId[]
 }
 
-// Home institution marker position — sourced from config (default: Cornell, Frank H.T.
-// Rhodes Hall, 136 Hoy Rd, Ithaca NY 14853 — CAC + BioHPC + CIT data center).
-export const HOME_POSITION = config.home.markerLatLng
 
 export const ZONE_LOCATIONS: ZoneInfo[] = [
   { id: 'us-west1',    lat: 45.6015, lng: -121.1842, label: 'us-west1',    backends: ['af2-gpu', 'esmfold-gpu', 'boltz2-gpu'] },
@@ -103,6 +100,7 @@ interface InfraMapProps {
   onZoneClick: (zone: ZoneInfo) => void
   center: google.maps.LatLngLiteral
   zoom: number
+  homePosition: google.maps.LatLngLiteral
   highlightUS?: boolean
   showSpokes?: boolean
   showHalos?: boolean
@@ -139,7 +137,8 @@ const US_FEATURE_STYLE: google.maps.FeatureStyleOptions = {
   strokeWeight: 1.2,
 }
 
-export default function InfraMap({ lanes, zoneStates, vmStates, onZoneClick, center, zoom, highlightUS, showSpokes, showHalos, mdLayer, showHyperdiskHub, showPartitionChips, showSliceViz }: InfraMapProps) {
+export default function InfraMap({ lanes, zoneStates, vmStates, onZoneClick, center, zoom, homePosition, highlightUS, showSpokes, showHalos, mdLayer, showHyperdiskHub, showPartitionChips, showSliceViz }: InfraMapProps) {
+  const { config } = useConfig()
   const { isLoaded } = useJsApiLoader({ googleMapsApiKey: MAPS_API_KEY, libraries: ['places'] })
 
   // Two map instances stacked, cross-fade between them.
@@ -367,7 +366,7 @@ export default function InfraMap({ lanes, zoneStates, vmStates, onZoneClick, cen
       )}
       <ZoneMarker
         key="home"
-        position={HOME_POSITION}
+        position={homePosition}
         label={config.institution.shortName.toUpperCase()}
         subtitle={config.home.markerSubtitle}
         subtitleHref={config.home.controllerConsoleHref}

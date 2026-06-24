@@ -2,6 +2,7 @@ import { theme } from './theme.config'
 
 export { config } from './institution.config'
 export { theme } from './theme.config'
+export { ConfigProvider, useConfig } from './ConfigContext'
 
 export function accentAlpha(alpha: number): string {
   const hex = theme.accent.replace('#', '')
