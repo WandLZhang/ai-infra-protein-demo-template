@@ -68,7 +68,7 @@ The background sbatch demo follows the Independent GPU Jobs pattern, dispatching
 
 Google's [GKE hypercluster](https://cloud.google.com/blog/products/containers-kubernetes/whats-new-in-gke-at-next26) **manages 1 million chips across 256,000 nodes spanning multiple regions under a single control plane**. AWS announced EKS at 100,000 nodes in July 2025.
 
-[Custom Compute Classes](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/about-compute-classes) act as the routing policy engine across all three workload shapes — Independent GPU Jobs fan across TPU+GPU, Data-Anchored Burst routes to GPU with Filestore, and Tightly-Coupled Simulation heads to H4D with RDMA — without the researcher choosing the backend.
+[Custom Compute Classes](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/about-compute-classes) act as the routing policy engine across all three workload shapes — Independent GPU Jobs fan across TPU+GPU, Data-Anchored Burst stages from the shared multi-region bucket, and Tightly-Coupled Simulation heads to compute-optimized HPC VMs with RDMA — without the researcher choosing the backend.
 
 ---
 
