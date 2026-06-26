@@ -25,7 +25,7 @@ On screen is a terminal on a login node with a Slurm command: `sbatch predict.sh
 
 A [400 Gbps Dedicated Interconnect](https://cloud.google.com/network-connectivity/docs/interconnect/concepts/overview) is possible to the nearest Google edge, with private IP connectivity, sub-millisecond latency, MACsec encrypted in transit. [Managed Microsoft AD](https://cloud.google.com/managed-microsoft-ad/docs/overview) can bridge on-prem UID/GID into the cloud nodes so researchers log in with the same identity they use today.
 
-The operating model is **one Slurm, one identity, one `/data/`** — researchers submit `sbatch` the same way they do on-prem today; Managed AD bridges their UID/GID; Cloud Storage FUSE mounts the same paths. If your institution already runs a condo model — owner partitions plus Slurm preemption letting researchers burst onto idle shared nodes — we extend that same burst surface to GCP.
+This environment shows an operating model of **one Slurm, one identity, one `/data/`** — researchers submit `sbatch` the same way they do on-prem today; Managed AD bridges their UID/GID; Cloud Storage FUSE mounts the same paths. If your institution already runs a condo model — owner partitions plus Slurm preemption letting researchers burst onto idle shared nodes — we extend that same burst surface to GCP.
 
 Slurm's `--requeue` flag handles Spot preemption: if a node is reclaimed, the job retries in the next available zone. Researchers see none of this — they submit `sbatch` and Slurm handles the rest.
 
