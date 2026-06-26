@@ -62,7 +62,7 @@ And at the workload layer, [Pod Snapshots](https://docs.cloud.google.com/kuberne
 
 The background sbatch demo follows the Independent GPU Jobs pattern, dispatching across consumption models:
 
-- [**3-Year CUD + Zonal Reservation**](https://cloud.google.com/compute/docs/instances/committed-use-discounts-overview) — for the 30–60% of GPU capacity that's always on (the queue never empties). Lowest cost tier — competitive with on-prem $/GPU-hr. Locks in pricing for the full term; the reservation guarantees the hardware is there.
+- [**3-Year CUD + Zonal Reservation**](https://cloud.google.com/compute/docs/instances/committed-use-discounts-overview) — Lowest cost tier — competitive with on-prem $/GPU-hr. Locks in pricing for the full term; the reservation guarantees the hardware is there.
 - [**DWS Flex Start**](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/dws) — **guaranteed GPU or TPU capacity for up to 7 days per request**, with no reservation contract or minimum commitment. AWS Capacity Blocks require fixed-duration commitment and rigid sizing. AWS also [raised H200 prices 15%](https://www.datacenterknowledge.com/cloud/aws-raises-h200-prices) recently.
 - [**Calendar Mode**](https://docs.cloud.google.com/compute/docs/instances/future-reservations-calendar-mode-overview) — pick a start date and lock in guaranteed capacity for **up to 90 days**. Useful for runs planned against grant milestones.
 
