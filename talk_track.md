@@ -74,9 +74,9 @@ Google's [GKE hypercluster](https://cloud.google.com/blog/products/containers-ku
 
 ## 6. Independent GPU Jobs: Fractional & Serverless  *(slide: `img`)*
 
-Not every model needs a full H100. [G4 fractional GPUs](https://docs.cloud.google.com/compute/docs/accelerator-optimized-machines#g4-series) carve up an NVIDIA RTX PRO 6000 Blackwell (96 GB total) into **1/8 (12 GB), 1/4 (24 GB), or 1/2 (48 GB) slices via vGPU**. AWS G5g ships whole L4 instances only — no native fractional split. Azure NCv supports MIG but does not offer vGPU sub-VM shapes.
+Not every model needs a full H100. [G4 fractional GPUs](https://docs.cloud.google.com/compute/docs/accelerator-optimized-machines#g4-series) carve up an NVIDIA RTX PRO 6000 Blackwell into **1/8, 1/4, or 1/2 slices via vGPU**. AWS G5g ships whole L4 instances only — no native fractional split. Azure NCv supports MIG but does not offer vGPU sub-VM shapes.
 
-For clinical inference — radiology endpoints, real-time microscopy — [Cloud Run with GPUs](https://cloud.google.com/run/docs/configuring/services/gpu) serves the fine-tuned model as a managed endpoint. **L4 (24 GB) or RTX PRO 6000 Blackwell (96 GB), 5-second cold start, scale-to-zero, per-second billing**. AWS Lambda has no GPU support. AWS App Runner has no GPU support. [Azure Container Apps Serverless GPU](https://learn.microsoft.com/en-us/azure/container-apps/gpu-serverless-overview) caps at A100 80 GB.
+For clinical inference — radiology endpoints, real-time microscopy — [serverless Cloud Run with GPUs](https://cloud.google.com/run/docs/configuring/services/gpu) serves the fine-tuned model as a managed endpoint. **L4 (24 GB) or RTX PRO 6000 Blackwell (96 GB), 5-second cold start, scale-to-zero, per-second billing**. AWS Lambda has no GPU support. AWS App Runner has no GPU support. [Azure Container Apps Serverless GPU](https://learn.microsoft.com/en-us/azure/container-apps/gpu-serverless-overview) caps at A100 80 GB.
 
 - **NLP and topic modeling** — digital-humanities text corpora, document classification. L4-class fractional inference.
 - **Point-of-care diagnostics** — mobile health platforms, colorimetric assays. Scale-to-zero L4 endpoints on Cloud Run.
@@ -86,7 +86,7 @@ For clinical inference — radiology endpoints, real-time microscopy — [Cloud 
 
 ## 7. Data-Anchored Burst: Storage  *(slide: `catalog2`)*
 
-Input datasets are large — hundreds of GB per session — but static per experiment, making this an ideal burst profile. The compute is often single-GPU per task; the prework is incrementally syncing predetermined parts of the shared filesystem using [Storage Transfer Service](https://cloud.google.com/storage-transfer/docs/overview).
+Input datasets are large — hundreds of GB per session — but static per experiment, making this an ideal burst profile. The compute is often single-GPU per task. the prework is incrementally syncing predetermined parts of the shared filesystem using [Storage Transfer Service](https://cloud.google.com/storage-transfer/docs/overview).
 
 - **Synchrotron beamline data** — SAXS, crystallography. Each beamtime produces a write-heavy burst of detector images followed by read-intensive reduction. Synchrotrons run over a thousand scientists/year, generating hundreds of TB per run where detector brightness is outrunning on-prem compute.
 - **Cryo-EM movie datasets** — CryoSPARC, RELION, ChimeraX, Phenix. Multi-terabyte data written once, then read repeatedly through motion-correction and 3D classification.
@@ -121,9 +121,8 @@ Tightly-coupled MPI simulation — molecular dynamics, computational fluid dynam
 - **Finite-element multiphysics** — COMSOL, structural mechanics, soft-matter modeling. Coupled-physics solvers that span multiple nodes.
 - **Computational fluid dynamics** — both classical MPI solvers and ML-native differentiable CFD in [JAX](https://jax.readthedocs.io/), Google's own framework, embedding PDE operators directly into neural nets.
 
-The hot scratch tier is zonal. Two options serve this profile: [Managed Lustre](https://docs.cloud.google.com/managed-lustre/docs/overview) with full POSIX, sub-millisecond latency at **10 TB/s** (AWS FSx for Lustre caps around 2 TB/s) or [Rapid Bucket](https://docs.cloud.google.com/storage/docs/rapid/rapid-bucket) with **15 TB/s, 20 million QPS** suited to streaming checkpoints. This same zonal tier is where data-anchored work that needs POSIX random I/O — RELION's iterative 3D refinement, CryoSPARC's database — stages in from the shared multi-region bucket, then writes results back.
-
-On the hierarchical-namespace Rapid Bucket, a finished job commits with an atomic, metadata-only folder rename: `gcloud storage mv gs://your-institution/Refine3D/job001.staging gs://your-institution/Refine3D/job001` updates the path without copying or deleting the underlying files, where AWS can only rename one object at a time, not whole directories.
+The hot scratch tier is zonal. Two options serve this profile: [Managed Lustre](https://docs.cloud.google.com/managed-lustre/docs/overview) with full POSIX, sub-millisecond latency at **10 TB/s** (AWS FSx for Lustre caps around 2 TB/s) or [Rapid Bucket](https://docs.cloud.google.com/storage/docs/rapid/rapid-bucket) with **15 TB/s, 20 million QPS** suited to streaming checkpoints.
+Hierarchical namespaces in buckets allow elegant folder renames — a finished job commits with an atomic, metadata-only rename: `gcloud storage mv gs://your-institution/Refine3D/job001.staging gs://your-institution/Refine3D/job001` updates the path without copying or deleting the underlying files, where AWS can only rename one object at a time, not whole directories.
 
 ---
 
@@ -162,9 +161,7 @@ Google reports approximately [90% of generative AI unicorns](https://cloud.googl
 
 ## 14. Why TPU Economics Are Structural  *(slide: `tpu2`)*
 
-TPU TCO per hour is **30% lower than NVIDIA GB200 and 41% lower than GB300**, per [SemiAnalysis](https://newsletter.semianalysis.com/p/tpuv7-google-takes-a-swing-at-the). Realized model FLOPS utilization is **40% on TPU versus 30% on GPU — 52% lower cost per effective petaFLOP**.
-
-In November 2025, Anthropic released [Claude Opus 4.5 with a 67% price cut](https://www.anthropic.com/news/claude-opus-4-5) — input tokens from $15/M down to $5/M, output from $75/M to $25/M. The price reduction is a direct consequence of running on TPU.
+TPU TCO per hour is **30% lower than NVIDIA GB200 and 41% lower than GB300**, per [SemiAnalysis](https://newsletter.semianalysis.com/p/tpuv7-google-takes-a-swing-at-the). Realized model FLOPS utilization is **40% on TPU versus 30% on GPU — 52% lower cost per effective petaFLOP** (Anthropic's [67% price cut on Claude Opus 4.5](https://www.anthropic.com/news/claude-opus-4-5) is a direct consequence of running on TPU).
 
 Power matters too. A TPU v7 rack draws **70 kW versus 120 kW for an NVIDIA GB200 NVL72 rack** — 42% less power per rack — relevant for any institution tracking per-petaFLOP power as a sustainability metric.
 
