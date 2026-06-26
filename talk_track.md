@@ -43,7 +43,7 @@ Research workloads span multiple estates. We organize them into three workload s
 
 ## 4. Independent GPU Jobs  *(slide: `pd1`)*
 
-Single-node, single-GPU jobs that fan out embarrassingly parallel — each job runs independently, inputs are small (KB–MB), compute is large. Every job lands on its own node via `sbatch`, Slurm fills on-prem first, and overflow bursts to whichever GCP region has capacity. The live demo runs this shape: AlphaFold, ESMFold, and Boltz-2 each on a single GPU or TPU.
+Single-node, single-GPU jobs that fan out embarrassingly parallel — each job runs independently, inputs are small (KB–MB), compute is large. The live demo runs this shape: AlphaFold, ESMFold, and Boltz-2 each on a single GPU or TPU.
 
 - **Protein structure prediction** — AlphaFold2, ZDOCK, molecular docking. Per-interaction deep learning that fans out cleanly onto single-GPU nodes.
 - **Single-cell and epigenomic pipelines** — Hi-C, ChIP-seq, CUT&RUN, ATAC-seq. Each sample is its own batch job.
