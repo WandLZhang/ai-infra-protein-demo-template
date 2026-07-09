@@ -15,7 +15,7 @@
 
 Your institution is evaluating how to extend on-prem HPC into the cloud. Research compute today may be spread across multiple independent estates — departmental clusters, shared institutional HPC, and consortium allocations. The next phase is extending that foundation elastically into the cloud.
 
-Google designs its own silicon, network transport, and datacenter hardware — attributes that make cloud bursting with Google worth a closer look.
+Google designs its own silicon, network transport, and datacenter hardware — attributes that make cloud bursting with Google [worth a closer look](https://www.gartner.com/doc/reprints?id=1-2NMT0142&ct=260630&st=sb).
 
 On screen is a terminal on a login node with a Slurm command: `sbatch predict.sh --model=all --target=both --protein=brca1 --requeue --partition=tpu,gpu`. When we press Enter, six inference jobs will dispatch across both TPU and GPU partitions to whichever cloud CONUS regions have capacity.
 
