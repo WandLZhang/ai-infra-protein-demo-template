@@ -12,7 +12,7 @@
 
 ## 1. HPC Cloud Burst  *(slide: `home`)*
 
-As you can imagine, Google designs its own silicon, network, and datacenters — which makes bursting HPC to Google worth a closer look as Gartner did. Here is their latest report. (Click open https://www.gartner.com/doc/reprints?id=1-2NMT0142&ct=260630&st=sb)
+As you can imagine, Google has its own custom silicon, network, and datacenters — which makes bursting HPC to Google worth a closer look as Gartner did. Here is their latest report. (Click open https://www.gartner.com/doc/reprints?id=1-2NMT0142&ct=260630&st=sb)
 
 One your screen is a simulated on-prem Slurm cluster that will burst out into a connected cluster in the cloud when I press Enter. Here is the actual VM (click VM). This will launch six protein-folding jobs across TPU and GPU, to whichever region has capacity.
 
