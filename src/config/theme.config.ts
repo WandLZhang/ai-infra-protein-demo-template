@@ -1,4 +1,4 @@
 export const theme = {
-  accent: '#B31B1B',
+  accent: '#8C1515',
   mode: 'light' as const,
 }

@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "hpc-protein-demo",
+    "site": "hpc-protein-summit-demo",
     "public": "dist",
     "ignore": [
       "firebase.json",
