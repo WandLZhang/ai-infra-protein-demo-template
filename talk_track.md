@@ -70,6 +70,8 @@ Finally, the deepest workload is tightly-coupled MPI — molecular dynamics, flu
 
 Moving past GPUs, about 90% of [gen-AI unicorns run on Google](https://cloud.google.com/ai-infrastructure) — and a major reason is the TPU differentiator. [Anthropic](https://www.anthropic.com/news/expanding-our-use-of-google-cloud-tpus-and-services) runs Claude on up to a million chips, OpenAI serves ChatGPT inference on TPU, and [Midjourney](https://cloud.google.com/customers/midjourney)'s monthly bill dropped from $2M to $700K. The economics are structural: TPUs run 30 to 40% cheaper than the top NVIDIA chips ([SemiAnalysis](https://newsletter.semianalysis.com/p/tpuv7-google-takes-a-swing-at-the)), at higher utilization, on 42% less power per rack.
 
+(point out our outputs)
+
 ---
 
 ## 10. TorchTPU: ESMFold in 4 Lines  *(slide: `tpu3`)*
@@ -79,5 +81,7 @@ And researchers don't have to change their stack — [TorchTPU](https://develope
 ---
 
 ## 11. AI Models Only Google Has  *(slide: `models1`)*
+
+(Point out inference output)
 
 The proof of Google's infrastructure effectiveness is our frontier research. Alphabet is **#3 in the world** for research output, ahead of every other tech company: **AlphaFold, the 2024 Nobel Prize in Chemistry, used by 3 million researchers** — plus AlphaGenome, AlphaEvolve, Co-Scientist and many more. /Google invented the mediums the whole industry runs on — **the Transformer, TensorFlow, Kubernetes, and JAX**. Through Public Sector fixed-price subscriptions [**PSSA**](https://cloud.google.com/edu/researchers) and incentives in our **GPAR** program, you all can have **both halves of the stack, the infrastructure and the science, from one place**.
