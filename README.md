@@ -11,8 +11,8 @@ generate a new config for any institution.
 
 ```bash
 # 1. Clone
-git clone https://github.com/WandLZhang/ai-infra-protein-demo-template.git
-cd ai-infra-protein-demo-template
+git clone https://github.com/WandLZhang/ai-infra-demo-proteins-template.git
+cd ai-infra-demo-proteins-template
 
 # 2. Install
 npm install
