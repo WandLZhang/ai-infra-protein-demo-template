@@ -449,13 +449,13 @@
 
 .marker-active .marker-text-box { border-color: var(--accent); color: var(--accent-soft); }
 .marker-active .rotatingBoxes1 { border-color: var(--accent); }
-.marker-active .rotatingBoxes2 { border-color: #D63B31; }
-.marker-active .rotatingBoxes3 { border-color: #E85A4F; }
+.marker-active .rotatingBoxes2 { border-color: var(--accent-2); }
+.marker-active .rotatingBoxes3 { border-color: var(--accent-3); }
 
 .marker-done .marker-text-box { border-color: var(--accent); color: var(--accent-soft); }
 .marker-done .rotatingBoxes1 { border-color: var(--accent); }
-.marker-done .rotatingBoxes2 { border-color: #D63B31; }
-.marker-done .rotatingBoxes3 { border-color: #E85A4F; }
+.marker-done .rotatingBoxes2 { border-color: var(--accent-2); }
+.marker-done .rotatingBoxes3 { border-color: var(--accent-3); }
 
 /* Side ladder — skewed bars with title + subtitle inside */
 .sideLadderWrapper {
