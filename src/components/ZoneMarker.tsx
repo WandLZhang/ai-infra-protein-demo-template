@@ -31,8 +31,8 @@ const VM_STATE_COLORS: Record<MarkerState, string> = {
   idle: '#999',
   provisioning: '#F8981D',
   failed: '#f47065',
-  active: '#f0a0a0',
-  done: '#f0a0a0',
+  active: 'var(--accent-soft)',
+  done: 'var(--accent-soft)',
 }
 
 export default function ZoneMarker({ position, label, subtitle, subtitleHref, state, vms, onClick, showHalo, showPartitionChips }: ZoneMarkerProps) {
