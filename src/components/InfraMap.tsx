@@ -4,7 +4,7 @@ import ZoneMarker, { type MarkerState, type VMInfo } from './ZoneMarker'
 import type { BackendId, LaneStatus } from '../types'
 import { BACKENDS } from '../backends'
 import { HUD_MAP_STYLES } from '../mapStyles'
-import { useConfig } from '../config'
+import { useConfig, theme } from '../config'
 
 // Geographic center of CONUS — used to position the multi-region bucket label over the polygon.
 const US_BUCKET_LABEL_POSITION: google.maps.LatLngLiteral = { lat: 39.83, lng: -98.58 }
@@ -52,9 +52,9 @@ const US_MULTIREGION_PATH: google.maps.LatLngLiteral[] = [
 
 const US_MULTIREGION_POLYGON_OPTIONS: google.maps.PolygonOptions = {
   paths: US_MULTIREGION_PATH,
-  fillColor: '#B31B1B',
+  fillColor: theme.accent,
   fillOpacity: 0.05,
-  strokeColor: '#B31B1B',
+  strokeColor: theme.accent,
   strokeOpacity: 0.25,
   strokeWeight: 1.2,
   clickable: false,
@@ -130,9 +130,9 @@ const mapOptions: google.maps.MapOptions = {
 
 // Style applied to the USA country feature when highlightUS is true.
 const US_FEATURE_STYLE: google.maps.FeatureStyleOptions = {
-  fillColor: '#B31B1B',
+  fillColor: theme.accent,
   fillOpacity: 0.05,
-  strokeColor: '#B31B1B',
+  strokeColor: theme.accent,
   strokeOpacity: 0.25,
   strokeWeight: 1.2,
 }
@@ -204,7 +204,7 @@ export default function InfraMap({ lanes, zoneStates, vmStates, onZoneClick, cen
         zIndex: 2,
         icons: [
           {
-            icon: { path: 'M 0,-1 0,1', strokeOpacity: 0.3, strokeColor: '#B31B1B', scale: 2 },
+            icon: { path: 'M 0,-1 0,1', strokeOpacity: 0.3, strokeColor: theme.accent, scale: 2 },
             offset: '0',
             repeat: '12px',
           },
@@ -236,9 +236,9 @@ export default function InfraMap({ lanes, zoneStates, vmStates, onZoneClick, cen
   React.useEffect(() => {
     const US_GEOJSON_URL = 'https://cdn.jsdelivr.net/gh/glynnbird/countriesgeojson@master/united%20states%20of%20america.geojson'
     const DATA_STYLE: google.maps.Data.StyleOptions = {
-      fillColor: '#B31B1B',
+      fillColor: theme.accent,
       fillOpacity: 0.05,
-      strokeColor: '#B31B1B',
+      strokeColor: theme.accent,
       strokeOpacity: 0.25,
       strokeWeight: 1.2,
       clickable: false,
