@@ -31,8 +31,8 @@
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 4px rgba(179, 27, 27, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(179, 27, 27, 0.8); }
+  0%, 100% { box-shadow: 0 0 4px rgba(var(--accent-rgb), 0.3); }
+  50% { box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.8); }
 }
 
 @keyframes terminalLineIn {
@@ -94,9 +94,9 @@
   display: inline-block;
   transform: translate(-50%, -50%);
   background: #fff;
-  border: 1px solid #B31B1B;
+  border: 1px solid var(--accent);
   font-family: 'Courier New', Courier, monospace;
-  color: #B31B1B;
+  color: var(--accent);
   padding: 7px 12px;
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
@@ -168,7 +168,7 @@
 }
 .md-doll-outer[data-visible="true"],
 .md-doll-middle[data-visible="true"] {
-  border-color: #B31B1B;
+  border-color: var(--accent);
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 @keyframes dollIn {
@@ -184,7 +184,7 @@
   transform: translateX(-50%);
   background: #fff;
   padding: 0 14px;
-  color: #B31B1B;
+  color: var(--accent);
   font-family: 'Courier New', Courier, monospace;
   font-size: 11px;
   letter-spacing: 0.22em;
@@ -209,7 +209,7 @@
   position: absolute;
   width: 12px;
   height: 12px;
-  border-color: #B31B1B;
+  border-color: var(--accent);
   border-style: solid;
 }
 .md-doll-outer[data-visible="true"]::before {
@@ -235,11 +235,11 @@
 /* Storage box — the "juice." Hero number on top, product name in cyan,
    subtle meta line below. Fixed min-width so the box doesn't squish. */
 .md-doll-storage {
-  background: linear-gradient(180deg, rgba(179,27,27,0.06) 0%, #fff 60%);
-  border: 1px solid #B31B1B;
+  background: linear-gradient(180deg, var(--accent-weak) 0%, #fff 60%);
+  border: 1px solid var(--accent);
   padding: 14px 22px 12px;
   font-family: 'Courier New', Courier, monospace;
-  color: #B31B1B;
+  color: var(--accent);
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   animation: softFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -262,7 +262,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #B31B1B;
+  color: var(--accent);
   margin-top: 6px;
 }
 .md-doll-storage-meta {
@@ -281,10 +281,10 @@
   box-sizing: border-box;
   transform: translate(-50%, 60px);
   background: #fff;
-  border: 1px solid #B31B1B;
+  border: 1px solid var(--accent);
   padding: 14px 18px 12px;
   font-family: 'Courier New', Courier, monospace;
-  color: #B31B1B;
+  color: var(--accent);
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   animation: softFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
@@ -294,7 +294,7 @@
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #B31B1B;
+  color: var(--accent);
   text-align: center;
   margin-bottom: 12px;
 }
@@ -324,8 +324,8 @@
 }
 .slice-cell {
   flex: 1;
-  background: linear-gradient(180deg, rgba(179,27,27,0.08) 0%, rgba(179,27,27,0.02) 100%);
-  border: 1px solid rgba(179,27,27,0.4);
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.08) 0%, rgba(var(--accent-rgb), 0.02) 100%);
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
   padding: 7px 0;
   text-align: center;
   font-size: 10px;
@@ -335,7 +335,7 @@
 .slice-viz-footer {
   margin-top: 12px;
   padding-top: 10px;
-  border-top: 1px dashed rgba(179,27,27,0.3);
+  border-top: 1px dashed rgba(var(--accent-rgb), 0.3);
   font-size: 9.5px;
   color: #708090;
   letter-spacing: 0.12em;
@@ -366,7 +366,7 @@
   width: 440px;
   box-sizing: border-box;
   background: rgba(255,255,255,0.99);
-  border: 1px solid rgba(179,27,27,0.35);
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
   padding: 7px 18px;
   font-family: 'Courier New', Courier, monospace;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -377,7 +377,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #B31B1B;
+  color: var(--accent);
   flex-shrink: 0;
 }
 .pd-stack-hero {
@@ -411,7 +411,7 @@
   line-height: 1.25;
 }
 .partition-chip-spot { color: #F8981D; }
-.partition-chip-flex { color: #B31B1B; }
+.partition-chip-flex { color: var(--accent); }
 
 /* Zone cache halo — cyan ring around each marker on the catalog3 slide.
    Visualizes Rapid Cache (SSD data) + Image Streaming (container files) landing zone-local. */
@@ -425,9 +425,9 @@
   top: 50%;
   width: 56px;
   height: 56px;
-  border: 1.5px solid #B31B1B;
+  border: 1.5px solid var(--accent);
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(179,27,27,0.2);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.2);
   pointer-events: none;
   z-index: 0;
   animation: haloPulse 2.2s ease-in-out infinite;
@@ -437,23 +437,23 @@
 .rotatingBoxes2 { animation: rotatingBoxesAnim2 2.25s ease infinite; border: 1px solid #bbb; position: absolute; inset: 0; }
 .rotatingBoxes3 { animation: rotatingBoxesAnim3 2s ease infinite; border: 1px solid #777; position: absolute; inset: 0; }
 
-.marker-provisioning .marker-text-box { border-color: #F8981D; color: #f0a0a0; }
+.marker-provisioning .marker-text-box { border-color: #F8981D; color: var(--accent-soft); }
 .marker-provisioning .rotatingBoxes1 { border-color: #F8981D; }
 .marker-provisioning .rotatingBoxes2 { border-color: #facc15; }
 .marker-provisioning .rotatingBoxes3 { border-color: #fde047; }
 
-.marker-failed .marker-text-box { border-color: #EF4035; color: #f0a0a0; }
+.marker-failed .marker-text-box { border-color: #EF4035; color: var(--accent-soft); }
 .marker-failed .rotatingBoxes1 { border-color: #EF4035; }
 .marker-failed .rotatingBoxes2 { border-color: #f87171; }
 .marker-failed .rotatingBoxes3 { border-color: #fca5a5; }
 
-.marker-active .marker-text-box { border-color: #B31B1B; color: #f0a0a0; }
-.marker-active .rotatingBoxes1 { border-color: #B31B1B; }
+.marker-active .marker-text-box { border-color: var(--accent); color: var(--accent-soft); }
+.marker-active .rotatingBoxes1 { border-color: var(--accent); }
 .marker-active .rotatingBoxes2 { border-color: #D63B31; }
 .marker-active .rotatingBoxes3 { border-color: #E85A4F; }
 
-.marker-done .marker-text-box { border-color: #B31B1B; color: #f0a0a0; }
-.marker-done .rotatingBoxes1 { border-color: #B31B1B; }
+.marker-done .marker-text-box { border-color: var(--accent); color: var(--accent-soft); }
+.marker-done .rotatingBoxes1 { border-color: var(--accent); }
 .marker-done .rotatingBoxes2 { border-color: #D63B31; }
 .marker-done .rotatingBoxes3 { border-color: #E85A4F; }
 
@@ -486,8 +486,8 @@
    Animates box-shadow only so it doesn't fight the inline borderLeftColor
    (set per-lane based on state) or the skewX transform on the wrap. */
 @keyframes sideLadderTpuPulse {
-  0%, 100% { box-shadow: 0 0 6px rgba(179,27,27,0.2); }
-  50%      { box-shadow: 0 0 14px rgba(179,27,27,0.4); }
+  0%, 100% { box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.2); }
+  50%      { box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.4); }
 }
 .sideLadderItem-tpu-pulse {
   animation: sideLadderTpuPulse 2.2s ease-in-out infinite;
@@ -525,14 +525,14 @@
   top: 0; left: 0;
   width: 4px;
   height: 100%;
-  background: #B31B1B;
+  background: var(--accent);
   transform: skew(-15deg);
 }
 .location-paper-region {
   animation: locationAnim 2.5s ease;
   animation-delay: 0.25s;
   animation-fill-mode: both;
-  color: #B31B1B;
+  color: var(--accent);
   font-size: 1.1vw;
   font-family: freight-sans-pro, sans-serif;
   font-weight: 600;
@@ -552,7 +552,7 @@
 .location-paper-name::after {
   content: '';
   display: block;
-  border-bottom: 2px solid #B31B1B;
+  border-bottom: 2px solid var(--accent);
   width: 125%;
   margin-top: 8px;
 }
@@ -577,9 +577,9 @@
 }
 .info-body code {
   font-family: 'Courier New', monospace;
-  color: #B31B1B;
+  color: var(--accent);
   font-size: 12px;
-  background: rgba(179,27,27,0.08);
+  background: rgba(var(--accent-rgb), 0.08);
   padding: 1px 4px;
   border-radius: 2px;
 }
